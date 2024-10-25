@@ -16,6 +16,7 @@ import { AvatarModule } from 'src/config/avatars/avatar.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { AuthHelper } from 'src/helpers';
 import { UsersModule } from 'src/users/users.module';
+import { HostingPlansModule } from 'src/hosting-plans/hosting-plans.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { UsersModule } from 'src/users/users.module';
     AvatarModule,
     AuthModule,
     UsersModule,
+    HostingPlansModule,
   ],
   controllers: [AppController],
   providers: [AppService, CustomLoggerService, AuthHelper],

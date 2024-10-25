@@ -73,6 +73,32 @@ model TimeZone {
 }
 
 
+model HostingPlan {
+  id        String       @id @default(cuid())
+  planName  String
+  pricing   Pricing[]
+}
+
+model Pricing {
+  id           String       @id @default(cuid())
+  interval     Interval
+  price        Float
+  currency     String
+  country      String
+  hostingPlan  HostingPlan @relation(fields: [hostingPlanId], references: [id])
+  hostingPlanId String
+  purchaseLink   String?
+}
+
+enum Interval {
+  MONTH_1
+  MONTH_3
+  MONTH_6
+  MONTH_12
+  MONTH_24
+}
+
+
 enum Status {
   ACTIVE
   SUSPENDED
