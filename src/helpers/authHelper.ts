@@ -23,7 +23,6 @@ export class AuthHelper {
     const searchCriteria = {
       OR: [
         { email: identifier },
-        { telephone: identifier },
         { username: identifier },
         { userid: identifier },
       ],

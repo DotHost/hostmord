@@ -5,7 +5,7 @@ import { PrismaService } from 'src/config/prisma/prisma.service';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy, 'securitysecured') {
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     private prisma: PrismaService,
     private config: ConfigService,

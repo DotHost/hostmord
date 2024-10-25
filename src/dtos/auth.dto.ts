@@ -102,12 +102,12 @@ export class ResetAuthDto {
 
 //login dto
 export class AuthDto {
-  @ApiProperty({ example: 'thegrtnx', required: true })
+  @ApiProperty({ example: 'admin@example.com', required: true })
   @IsNotEmpty()
   @MinLength(3)
   identifier: string;
 
-  @ApiProperty({ example: 'qwsaqwsa', required: true })
+  @ApiProperty({ example: 'adminlogin', required: true })
   @IsString()
   @IsNotEmpty()
   password: string;
