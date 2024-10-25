@@ -15,6 +15,9 @@ import { SendMailsModule } from 'src/config/email/sendMail.module';
 import { CloudinaryModule } from 'src/config/cloudinary/cloudinary.module';
 import { AvatarModule } from 'src/config/avatars/avatar.module';
 
+//mordules
+import { AuthModule } from 'src/auth/auth.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -29,6 +32,7 @@ import { AvatarModule } from 'src/config/avatars/avatar.module';
     SendMailsModule,
     CloudinaryModule,
     AvatarModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, CustomLoggerService],

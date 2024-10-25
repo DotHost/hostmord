@@ -58,15 +58,6 @@ async function bootstrap() {
     .setVersion('1.0.0')
     .addServer(`http://localhost:${port}`, 'Local environment')
     .addServer(productionUrl, 'Production environment')
-    .addApiKey(
-      {
-        type: 'apiKey',
-        name: 'Authorization',
-        in: 'header',
-        description: 'Format: pk_xxxxx:sk_xxxxx',
-      },
-      'api-key',
-    )
     .addBearerAuth(
       { type: 'http', scheme: 'Bearer', bearerFormat: 'JWT' },
       'Authorization',

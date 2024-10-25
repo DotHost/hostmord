@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -19,111 +13,24 @@ model User {
   firstname         String
   lastname          String
   email             String             @unique
-  gender            Gender?
-  telephone         String             @unique
   username          String             @unique
   password          String
   confirm_password  String
   otp               String?
   otpExpiry         DateTime?
-  profilePicture    String?
-  company_name      String?
-  address           String?
-  city              String?
-  state             String?
-  zip               String?
-  default_currency  String?            @default("USD")
-  country           String?
-  referall          String?
-  role              Role               @default(USER)
   isActive          Boolean            @default(false)
   isVerified        Boolean            @default(false)
   accountStatus     Status             @default(ACTIVE)
   token             String?            @unique           
   lastLogin         DateTime?
+  profilePicture    String?
   fingerprint       String?            @unique
   date_created      DateTime           @default(now())
+  role              Role               @default(ADMIN)
   Geolocation       GeoLocationRecord?
-  wallet            Wallet[]
-  WalletBalance     WalletBalance?
-  apikey            ApiKey[]
-  pin               Pin?
 
   @@index([lastname, firstname])
   @@index([isActive, isVerified])
-}
-
-
-
-model ConnectResllerData {
-    clientId          Int     @unique
-    resellerId        Int
-    brandId           Int
-    caccountStatus    Int
-    roleTypeId        Int
-    emailAddress      String    @id @unique
-    created_at        DateTime  @default(now())
-    updated_at        DateTime  @updatedAt
-
-}
-
-model CustomDomainPricing {
-  domainName         String     @id @unique
-  registerFee        Float   
-  renewalFee         Float
-  transferFee        Float
-  dateCreated        DateTime  @default(now())
-  updated_at         DateTime  @updatedAt
-}
-
-model Wallet {
-  wallet_id      String    @id @default(cuid())
-  accountNumber  String    @unique
-  bankName       String?
-  dva_id         Int?
-  accountName    String?
-  bankId         Int?
-  currency       String?
-  cust_code      String?
-  cust_id        Int?
-  userId         String
-  user           User      @relation(fields: [userId], references: [userid], onDelete: Cascade)
-  created_at     DateTime  @default(now())
-  updated_at     DateTime  @updatedAt
-
-  @@index([userId])
-}
-
-model WalletBalance {
-  balanceId   String    @id @default(cuid())
-  userId      String    @unique
-  user        User      @relation(fields: [userId], references: [userid], onDelete: Cascade)
-  balance     Float     @default(0.0)
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
-
-  @@index([userId])
-}
-
-model Pin {
-  pinid                      String        @id @default(cuid())
-  pin                        String           
-  userId                     String        @unique
-  user                       User          @relation(fields: [userId], references: [userid], onDelete: Cascade)
-  date_created               DateTime      @default(now())
-  date_updated               DateTime      @updatedAt
-}
-
-
-model ApiKey {
-  id                          Int            @id @default(autoincrement())
-  publicKey                   String?        @unique
-  secretKey                   String?        @unique
-  userid                      String
-  user                        User           @relation(fields: [userid], references: [userid], onDelete: Cascade)
-  environment                 Environment    @default(SANDBOX)  
-  createdAt                   DateTime       @default(now())
-  updatedAt                   DateTime       @updatedAt
 }
 
 
@@ -166,30 +73,12 @@ model TimeZone {
 }
 
 
-
-
-enum Role {
-  USER
-  MODERATOR
-  AFFILIATE
-  DEVELOPER
-  MERCHANT
-  AGENT
-  ADMIN
-}
-
-enum Gender {
-  Male
-  Female
-}
-
 enum Status {
   ACTIVE
   SUSPENDED
 }
 
-
-enum Environment {
-  LIVE
-  SANDBOX
+enum Role {
+  MODERATOR
+  ADMIN
 }

@@ -1,24 +1,16 @@
 import { Injectable, Global } from '@nestjs/common';
 import * as argon from 'argon2';
 import { PrismaService } from 'src/config/prisma/prisma.service';
-import { PaystackService } from 'src/config/paystack/paystack.service';
-import { User, Environment } from '@prisma/client';
-import * as crypto from 'crypto';
 import { countries } from 'countries-list';
-import { GeolocationService } from 'src/config/geolocation/geolocation.service';
 import { GeoLocationRecord } from '@prisma/client';
 
 @Global()
 @Injectable()
 export class AuthHelper {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly paystackService: PaystackService,
-    private readonly geolocation: GeolocationService,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
-  async hashPassword(password: string) {
-    return await argon.hash(password);
+  async hashData(data: string) {
+    return await argon.hash(data);
   }
 
   async generateOTP(length: number = 4) {
@@ -38,10 +30,6 @@ export class AuthHelper {
     };
     return await this.prisma.user.findFirst({
       where: searchCriteria,
-      include: {
-        wallet: true,
-        WalletBalance: true,
-      },
     });
   }
 
@@ -66,16 +54,6 @@ export class AuthHelper {
   async validateUser(userId: string) {
     return await this.prisma.user.findUnique({
       where: { userid: userId },
-      include: {
-        wallet: true,
-        WalletBalance: true,
-      },
-    });
-  }
-
-  async getCustomPricing(domain: string) {
-    return await this.prisma.customDomainPricing.findUnique({
-      where: { domainName: domain },
     });
   }
 
@@ -88,95 +66,6 @@ export class AuthHelper {
     delete sanitizedUser.fingerprint;
     delete sanitizedUser.token;
     return sanitizedUser;
-  }
-
-  async ensureWalletBalanceExists(userId: string) {
-    const existingUser = await this.prisma.walletBalance.findUnique({
-      where: { userId },
-    });
-
-    if (!existingUser) {
-      await this.prisma.walletBalance.create({ data: { userId } });
-    }
-  }
-
-  async handlePaystackIntegration(user: User) {
-    const paystackCustomer = await this.paystackService.createPaystackCustomer(
-      user.email,
-      user.firstname,
-      user.lastname,
-      user.telephone,
-    );
-
-    if (paystackCustomer.status === true) {
-      const paystackAccount = await this.paystackService.createDedicatedAccount(
-        paystackCustomer.data.customer_code,
-      );
-
-      const existingWallet = await this.prisma.wallet.findUnique({
-        where: { accountNumber: paystackAccount.data.account_number },
-      });
-
-      if (!existingWallet) {
-        await this.prisma.wallet.create({
-          data: {
-            userId: user.userid,
-            accountNumber: paystackAccount.data.account_number,
-            bankName: paystackAccount.data.bank.name,
-            accountName: paystackAccount.data.account_name,
-            bankId: paystackAccount.data.bank.id,
-            currency: paystackAccount.data.currency,
-            cust_code: paystackAccount.data.customer.customer_code,
-            cust_id: paystackAccount.data.customer.id,
-            dva_id: paystackAccount.data.id,
-          },
-        });
-      }
-    }
-  }
-  private generateKey(prefix: string, length: number): string {
-    return `${prefix}_${crypto.randomBytes(length).toString('hex')}`;
-  }
-
-  async generateApiKeyPair(userId: User['userid']) {
-    const environments = [Environment.SANDBOX, Environment.LIVE];
-
-    for (const environment of environments) {
-      // Check if API keys already exist for this user and environment
-      const existingApiKey = await this.prisma.apiKey.findFirst({
-        where: { userid: userId, environment },
-      });
-
-      if (!existingApiKey) {
-        const publicKey = this.generateKey(
-          environment === Environment.SANDBOX ? 'pk_test' : 'pk_live',
-          16,
-        );
-        const secretKey = this.generateKey(
-          environment === Environment.SANDBOX ? 'sk_test' : 'sk_live',
-          32,
-        );
-
-        await this.prisma.apiKey.create({
-          data: {
-            publicKey,
-            secretKey,
-            environment,
-            userid: userId,
-          },
-        });
-      }
-    }
-  }
-
-  async validateApiKey(publicKey: string, secretKey: string) {
-    const apiKey = await this.prisma.apiKey.findUnique({
-      where: { publicKey },
-    });
-
-    if (!apiKey) return false;
-
-    return apiKey.secretKey === secretKey;
   }
 
   async upsertGeolocation(
@@ -306,7 +195,7 @@ export class AuthHelper {
     const digits: number[] = [];
 
     while (digits.length < 5) {
-      const randomDigit = Math.floor(Math.random() * 10); // Generates a random number between 0 and 9
+      const randomDigit = Math.floor(Math.random() * 10);
 
       // Ensure the digit is unique in the array
       if (!digits.includes(randomDigit)) {
