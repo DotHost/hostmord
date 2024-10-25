@@ -15,9 +15,6 @@ import { SendMailsModule } from 'src/config/email/sendMail.module';
 import { CloudinaryModule } from 'src/config/cloudinary/cloudinary.module';
 import { AvatarModule } from 'src/config/avatars/avatar.module';
 
-//modules
-import { DomainsModule } from 'src/domains/domains.module';
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,7 +22,6 @@ import { DomainsModule } from 'src/domains/domains.module';
     }),
     PrismaModule,
     GeolocationModule,
-    DomainsModule,
     WhoisModule,
     PaystackModule,
     DNSModule,
