@@ -64,7 +64,7 @@ async function bootstrap() {
     )
     .addTag('Server', 'Endpoint for Server functions')
     .addTag('Auth', 'Endpoint for Auth functions')
-    .addTag('Domains', 'Endpoint for Domains functions')
+    .addTag('Users', 'Endpoint for users functions')
     .build();
 
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerOptions);

@@ -15,6 +15,7 @@ import { AvatarModule } from 'src/config/avatars/avatar.module';
 //mordules
 import { AuthModule } from 'src/auth/auth.module';
 import { AuthHelper } from 'src/helpers';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { AuthHelper } from 'src/helpers';
     SendMailsModule,
     AvatarModule,
     AuthModule,
+    UsersModule,
   ],
   controllers: [AppController],
   providers: [AppService, CustomLoggerService, AuthHelper],

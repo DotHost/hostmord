@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { GeolocationService } from 'src/config/geolocation/geolocation.service';
 import { handleResponse } from 'src/common';
 import { PrismaService } from 'src/config/prisma/prisma.service';
+import { AvatarService } from 'src/config/avatars/avatar.service';
 import { AuthHelper } from 'src/helpers';
 
 @Injectable()
@@ -15,6 +16,7 @@ export class AppService {
   constructor(
     private readonly configService: ConfigService,
     private readonly geolocation: GeolocationService,
+    private avatar: AvatarService,
     private auth: AuthHelper,
     private prisma: PrismaService,
   ) {}
@@ -105,6 +107,8 @@ export class AppService {
       where: { role: 'ADMIN' },
     });
 
+    const avatar = await this.avatar.getRandomAvatar();
+
     if (!adminUser) {
       // Get environment variables for admin data
       const adminEmail = process.env.ADMIN_EMAIL;
@@ -125,6 +129,7 @@ export class AppService {
           username: adminUsername,
           firstname: adminFirstName,
           lastname: adminLastName,
+          profilePicture: avatar,
           isActive: true,
           isVerified: true,
           role: 'ADMIN',

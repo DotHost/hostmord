@@ -1,26 +1,27 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { Injectable, HttpStatus } from '@nestjs/common';
+import { AuthHelper } from 'src/helpers';
+import { handleResponse } from 'src/common/filters/responseHandler';
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
+  constructor(private readonly authServiceHelper: AuthHelper) {}
 
-  findAll() {
-    return `This action returns all users`;
-  }
+  async getProfile(userId: string) {
+    const user = await this.authServiceHelper.validateUser(userId);
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
+    if (!user) {
+      throw new handleResponse(
+        HttpStatus.UNAUTHORIZED,
+        'User session not authorized',
+      );
+    }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
-  }
+    const sanitizedUser = this.authServiceHelper.sanitizeUser(user);
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    return new handleResponse(
+      HttpStatus.OK,
+      'User found',
+      sanitizedUser,
+    ).getResponse();
   }
 }
