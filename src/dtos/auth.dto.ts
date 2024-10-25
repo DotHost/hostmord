@@ -8,7 +8,6 @@ import {
   IsOptional,
 } from 'class-validator';
 import { PartialType } from '@nestjs/swagger';
-import { Role } from '@prisma/client';
 
 //create auth dto
 export class CreateAuthDto {
@@ -45,6 +44,15 @@ export class CreateAuthDto {
   @IsString()
   @IsNotEmpty()
   confirm_password: string;
+}
+
+//invite
+export class InviteAuthDto {
+  @ApiProperty({ example: 'john@example.com', required: true })
+  @IsEmail()
+  @IsNotEmpty()
+  @MinLength(3)
+  email: string;
 }
 
 //update auth dto

@@ -5,6 +5,8 @@ import * as dayjs from 'dayjs';
 import { ConfigService } from '@nestjs/config';
 import { GeolocationService } from 'src/config/geolocation/geolocation.service';
 import { handleResponse } from 'src/common';
+import { PrismaService } from 'src/config/prisma/prisma.service';
+import { AuthHelper } from 'src/helpers';
 
 @Injectable()
 export class AppService {
@@ -13,6 +15,8 @@ export class AppService {
   constructor(
     private readonly configService: ConfigService,
     private readonly geolocation: GeolocationService,
+    private auth: AuthHelper,
+    private prisma: PrismaService,
   ) {}
 
   async getHello(): Promise<string> {
@@ -93,6 +97,42 @@ export class AppService {
     const files = await this.getLogFiles();
     for (const file of files) {
       await this.deleteLogFile(file);
+    }
+  }
+
+  async checkAndCreateAdmin() {
+    const adminUser = await this.prisma.user.findFirst({
+      where: { role: 'ADMIN' },
+    });
+
+    if (!adminUser) {
+      // Get environment variables for admin data
+      const adminEmail = process.env.ADMIN_EMAIL;
+      const adminPassword = process.env.ADMIN_PASSWORD;
+      const adminUsername = process.env.ADMIN_USERNAME;
+      const adminFirstName = process.env.ADMIN_FIRSTNAME;
+      const adminLastName = process.env.ADMIN_LASTNAME;
+
+      // Hash the admin password
+      const hashedPassword = await this.auth.hashData(adminPassword);
+
+      // Create the admin user
+      await this.prisma.user.create({
+        data: {
+          email: adminEmail,
+          password: hashedPassword,
+          confirm_password: hashedPassword,
+          username: adminUsername,
+          firstname: adminFirstName,
+          lastname: adminLastName,
+          isActive: true,
+          isVerified: true,
+          role: 'ADMIN',
+        },
+      });
+
+      //TODO: send email notification
+      return new handleResponse(HttpStatus.OK, 'Admin Created').getResponse();
     }
   }
 }

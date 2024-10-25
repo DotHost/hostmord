@@ -20,7 +20,7 @@ model User {
   otpExpiry         DateTime?
   isActive          Boolean            @default(false)
   isVerified        Boolean            @default(false)
-  accountStatus     Status             @default(ACTIVE)
+  accountStatus     Status             @default(PENDING)
   token             String?            @unique           
   lastLogin         DateTime?
   profilePicture    String?
@@ -76,6 +76,7 @@ model TimeZone {
 enum Status {
   ACTIVE
   SUSPENDED
+  PENDING
 }
 
 enum Role {
